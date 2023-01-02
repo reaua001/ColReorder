@@ -1,4 +1,4 @@
-/*! ColReorder 1.6.1
+/*! ColReorder 1.6.1 Modified
  * ©2010-2022 SpryMedia Ltd - datatables.net/license
  */
 
@@ -496,6 +496,22 @@ $.extend( ColReorder.prototype, {
 	fnDisable: function ()
 	{
 		this.s.enable = false;
+	},
+
+	/**
+	 * Cancel current user interaction
+	 */
+	"fnCancel": function ()
+	{
+		$(document).off('.ColReorder');
+		if (this.dom.drag !== null) {
+			/* Remove the guide elements */
+			this.dom.drag.remove();
+			this.dom.pointer.remove();
+			this.dom.drag = null;
+			this.dom.pointer = null;
+		}
+		return this;
 	},
 
 	/**
@@ -1418,6 +1434,12 @@ $(document).on( 'preInit.dt.colReorder', function (e, settings) {
 
 
 // API augmentation
+$.fn.dataTable.Api.register('colReorder.cancel()', function () {
+	return this.iterator('table', function (ctx) {
+		ctx._colReorder.fnCancel();
+	});
+});
+
 $.fn.dataTable.Api.register( 'colReorder.reset()', function () {
 	return this.iterator( 'table', function ( ctx ) {
 		ctx._colReorder.fnReset();
